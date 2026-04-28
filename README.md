@@ -1,12 +1,26 @@
-# A* PATHFINDING ALGORITHM
+# AI PROJECT - PATHFINDING & PLANNING
 
-## GIOI THIEU
+## GIỚI THIỆU
 
+Dự án này triển khai các thuật toán AI:
+
+### M1: A* Pathfinding Algorithm
 Đây là ứng dụng triển khai **Thuật toán A*** để tìm đường đi ngắn nhất trong một lưới (grid).
-Ứng dụng sẽ:
 - Khởi tạo một lưới 5x5 có chứa tường
 - Tìm đường đi từ vị trí START đến vị trị GOAL
 - Hiển thị đường đi bằng biểu đồ
+
+### M4: Logic + AI Planning (STRIPS/PDDL)
+Hệ thống logic và lập kế hoạch AI cho tự động hóa nhà thông minh
+- **Phần 1 (Logic)**: Forward Chaining Inference Engine
+  - Biểu diễn các quy tắc logic (FOL - First Order Logic)
+  - Ví dụ: "Nếu trời tối và có người ở nhà → bật đèn"
+  - Sử dụng suy luận tiến (Forward Chaining) để suy ra các sự kiện mới
+  
+- **Phần 2 (Planning)**: STRIPS/PDDL Planner
+  - Lập kế hoạch hành động từ trạng thái ban đầu đến trạng thái mục tiêu
+  - Biểu diễn hành động với điều kiện tiên quyết (preconditions) và kết quả (effects)
+  - Sử dụng BFS/DFS để tìm chuỗi hành động tối ưu
 
 ---
 
@@ -14,18 +28,36 @@
 
 ```
 AI/
-├── config.py           # Cấu hình: grid, điểm bắt đầu, điểm đích
-├── main.py             # Chương trình chính
-├── core/
+├── config.py           # Cấu hình: grid, điểm bắt đầu, điểm đích (M1)
+├── main.py             # Chương trình chính - Menu chọn M1 hoặc M4
+├── core/               # Core utilities (M1 - A* Pathfinding)
 │   ├── __init__.py
 │   ├── grid.py         # Lớp GridWorld: Đại diện thế giới dạng lưới
 │   └── utils.py        # Hàm hỗ trợ: heuristic, reconstruct_path
-├── search/
+├── search/             # Search algorithms (M1 - A*)
 │   ├── __init__.py
 │   └── astar.py        # Thuật toán A*
-├── visualization/
+├── visualization/      # Visualization (M1 - biểu đồ)
 │   ├── __init__.py
 │   └── plot.py         # Vẽ lưới và đường đi
+├── m4/                 # Member 4: Logic + AI Planning (STRIPS/PDDL)
+│   ├── logic/          # Logic inference (Part 1)
+│   │   ├── __init__.py
+│   │   ├── rules.py    # Định nghĩa rules, predicates, knowledge base
+│   │   └── inference.py # Forward Chaining inference engine
+│   ├── planning/       # AI Planning (Part 2)
+│   │   ├── __init__.py
+│   │   ├── strips.py   # STRIPS algorithm - lập kế hoạch
+│   │   ├── domain.py   # Định nghĩa domain (actions, preconditions, effects)
+│   │   └── planner.py  # Planner - chạy STRIPS
+│   ├── demo_m4.py      # Demo riêng từng phần
+│   ├── test_import.py  # Test import modules
+│   ├── INSTALL_PYTHON.md # Hướng dẫn cài đặt Python
+│   ├── MEMBER_M4.md    # Chi tiết M4 (khái niệm + code)
+│   ├── QUICKSTART.md   # Hướng dẫn nhanh
+│   ├── FILE_GUIDE.md   # Hướng dẫn tìm file
+│   ├── M4_SUMMARY.md   # Tóm tắt M4
+│   └── INDEX.md        # Điểm bắt đầu
 └── .vscode/
     ├── settings.json   # Cấu hình Code Runner
     └── tasks.json      # Cấu hình Task Runner
@@ -54,16 +86,34 @@ pip install matplotlib
 Mở PowerShell, chuyển vào thư mục dự án:
 
 ```powershell
-cd 'd:\Visual studio code\AI'
+cd 'e:\CACMONTRENLOP\NAM3\Ki2\2. AI'
 python main.py
 ```
 
-### Cách 2: Dùng Code Runner
+Sau đó chọn:
+- **1** để chạy M1 (A* Pathfinding)
+- **2** để chạy M4 (Logic + Planning)
+- **3** để chạy cả hai
+- **0** để thoát
+
+### Cách 2: Chạy trực tiếp module
+
+#### M1 - A* Pathfinding:
+```powershell
+python -c "from main import run_m1_astar; run_m1_astar()"
+```
+
+#### M4 - Logic + Planning:
+```powershell
+python -c "from main import run_m4_logic_planning; run_m4_logic_planning()"
+```
+
+### Cách 3: Dùng Code Runner
 
 - Bấm **Ctrl+Alt+N** (nếu đã cấu hình Code Runner)
 - Hoặc Click phải > "Run Code"
 
-### Cách 3: Dùng Task Runner
+### Cách 4: Dùng Task Runner
 
 Bấm **Ctrl+Shift+B** để chạy task mặc định
 
@@ -71,7 +121,9 @@ Bấm **Ctrl+Shift+B** để chạy task mặc định
 
 ## KẾT QUẢ CHẠY
 
-Khi chạy xong, bạn sẽ thấy:
+### M1 - A* Pathfinding:
+
+Khi chạy M1, bạn sẽ thấy:
 
 ```
 Path found!
@@ -82,6 +134,188 @@ Length: 9
 Đồng thời một cửa sổ matplotlib sẽ hiển thị:
 - Lưới 5x5 (màu trắng = đi được, màu đen = tường)
 - Đường đi được vẽ bằng đường trắng
+
+### M4 - Logic + Planning:
+
+#### Phần 1 - Logic Inference Output:
+
+```
+============================================================
+LOGIC INFERENCE ENGINE - FORWARD CHAINING
+============================================================
+
+[1] SỰ KIỆN BAN ĐẦU (Facts):
+  • dark(living_room)
+  • motion_detected(living_room)
+  • person_home()
+  • room(living_room)
+  • room(bedroom)
+  • room(kitchen)
+  • temperature(20)
+
+[2] SỐ QUY TẮC: 5
+  • Auto_Light_On: [dark(living_room) ∧ person_home()] → [light_on(living_room)]
+  • Motion_Activated_Light: [motion_detected(living_room)] → [light_on(living_room)]
+  • Auto_Light_Off: [light_on(living_room) ∧ no_motion(living_room)] → [light_off(living_room)]
+  • Auto_AC_On: [high_temperature()] → [ac_on()]
+  • Away_Mode_Activated: [no_person_home()] → [door_locked() ∧ energy_saving_mode()]
+
+[3] KẾT QUẢ SAU SỰ LUẬN:
+  • Tổng sự kiện: 8
+  • Quy tắc áp dụng: 2
+
+[4] DANH SÁCH TẤT CẢ SỰ KIỆN:
+  🟢 Suy ra | light_on(living_room)
+  ⚫ Gốc | person_home()
+  ...
+
+[5] HÀNH ĐỘNG TỰ ĐỘNG HÓA:
+  ⚡ light_on(living_room)
+```
+
+#### Phần 2 - STRIPS Planning Output:
+
+```
+======================================================================
+AI PLANNING - SMART HOME AUTOMATION (STRIPS/PDDL)
+======================================================================
+
+[1] TRẠNG THÁI BAN ĐẦU (Initial State):
+  • person_home()
+  • dark()
+  • light_off()
+  • ac_off()
+  ...
+
+[2] TRẠNG THÁI MỤC TIÊU (Goal State):
+  • person_home()
+  • light_on()
+  • ac_off()
+  • door_locked()
+  ...
+
+[3] DANH SÁCH CÁC HÀNH ĐỘNG KHẢ DỤNG: 8
+  1. turn_on_light: [dark() ∧ person_home()] → [+light_on() -light_off()]
+  2. turn_off_light: [light_on()] → [+light_off() -light_on()]
+  ...
+
+[4] TÌM KIẾM KẾ HOẠCH (BFS)...
+
+[5] KẾ HOẠCH TÌM ĐƯỢC: 3 bước
+  Step 1: turn_on_light
+  Step 2: lock_door
+  Step 3: arm_security
+
+[6] THỰC THI KẾ HOẠCH:
+  Step 1: turn_on_light
+    ✓ Thực thi thành công
+  Step 2: lock_door
+    ✓ Thực thi thành công
+  Step 3: arm_security
+    ✓ Thực thi thành công
+
+[7] TRẠNG THÁI CUỐI CÙNG: 6 atoms
+  ✓ ĐẠT MỤC TIÊU!
+```
+
+---
+
+## GIẢI THÍCH M4: LOGIC + PLANNING
+
+### Phần 1: LOGIC INFERENCE (Forward Chaining)
+
+#### Khái niệm:
+
+- **Predicate (Vị từ)**: Biểu diễn sự kiện trong logic
+  - Ví dụ: `light_on(living_room)`, `person_home()`, `dark()`
+  
+- **Rule (Quy tắc)**: Biểu diễn mối quan hệ logic
+  - Dạng: **Nếu {conditions} thì {conclusions}**
+  - Ví dụ: `Nếu dark(X) ∧ person_at(X) → turn_light_on(X)`
+  
+- **Forward Chaining**: Suy luận từ sự kiện → kết luận
+  - Bắt đầu từ các sự kiện gốc (facts)
+  - Liên tục áp dụng các quy tắc
+  - Suy ra các sự kiện mới cho đến khi không còn quy tắc nào có thể áp dụng
+
+#### Ứng dụng: Smart Home Automation
+
+**Bài toán**: Tự động hóa nhà thông minh
+
+**Sự kiện ban đầu**:
+- `person_home()` - Có người ở nhà
+- `dark()` - Trời tối
+- `motion_detected()` - Phát hiện chuyển động
+
+**Quy tắc**:
+1. Nếu tối + có người → bật đèn
+2. Nếu phát hiện chuyển động → bật đèn
+3. Nếu nhiệt độ cao → bật điều hòa
+4. Nếu vắng nhà → khóa cửa + chế độ tiết kiệm
+
+**Kết luận**:
+- `light_on()` - Đèn được bật tự động
+- `ac_on()` - Điều hòa được bật (nếu nhiệt độ cao)
+- `door_locked()` - Cửa khóa tự động (nếu vắng nhà)
+
+### Phần 2: STRIPS PLANNING (Goal-Based Planning)
+
+#### Khái niệm:
+
+- **State (Trạng thái)**: Tập hợp các atoms (sự kiện) tại một thời điểm
+  
+- **Action (Hành động)**: Biểu diễn hành động trong STRIPS
+  - **Preconditions**: Điều kiện tiên quyết (phải thoả mãn để thực thi)
+  - **Effects**: Kết quả của hành động (atoms được thêm/xóa)
+  
+- **Goal**: Trạng thái mục tiêu cần đạt đến
+  
+- **Planning**: Tìm chuỗi hành động từ initial state → goal state
+
+#### Ví dụ:
+
+**Bài toán**: Nhà thông minh vào buổi tối
+
+**Trạng thái ban đầu**:
+```
+- person_home()
+- dark()
+- light_off()
+- ac_off()
+- door_unlocked()
+```
+
+**Mục tiêu**:
+```
+- person_home()
+- light_on()        ← Cần bật đèn
+- ac_off()
+- door_locked()     ← Cần khóa cửa
+```
+
+**Hành động có sẵn**:
+```
+1. turn_on_light
+   Preconditions: [dark(), person_home()]
+   Effects: [+light_on(), -light_off()]
+
+2. lock_door
+   Preconditions: [person_home()]
+   Effects: [+door_locked(), -door_unlocked()]
+```
+
+**Kế hoạch tìm được**:
+```
+Step 1: turn_on_light
+  - Kiểm tra: dark() ✓, person_home() ✓ → có thể thực thi
+  - Kết quả: light_on() được thêm, light_off() được xóa
+
+Step 2: lock_door
+  - Kiểm tra: person_home() ✓ → có thể thực thi
+  - Kết quả: door_locked() được thêm
+```
+
+**Trạng thái cuối cùng**: ✓ ĐẠT MỤC TIÊU
 
 ---
 
@@ -170,6 +404,22 @@ if path:
 else:
     In "No path found!"
 ```
+
+---
+
+## HƯỚNG DẪN CÀI ĐẶT PYTHON
+
+**Chú ý**: Python chưa được cài đặt trên hệ thống? Xem file [INSTALL_PYTHON.md](INSTALL_PYTHON.md)
+
+---
+
+## THÔNG TIN CHI TIẾT VỀ M4
+
+Xem file [MEMBER_M4.md](MEMBER_M4.md) để có hướng dẫn chi tiết:
+- Khái niệm Logic Inference + Forward Chaining
+- Khái niệm STRIPS Planning + BFS
+- Ví dụ cụ thể cho mỗi phần
+- Cách sử dụng từng module
 
 ---
 
