@@ -17,7 +17,9 @@ from m3.visualize import plot_training_results, print_q_table
 from logic.rules import create_smart_home_kb
 from logic.inference import run_inference
 from logic.planner import run_smart_home_planning
-
+from search.astar import astar
+from search.dijkstra import dijkstra
+from search.greedy import greedy
 
 def run_m1_astar():
     """
@@ -31,13 +33,21 @@ def run_m1_astar():
     print("\n[1] Khoi tao luoi 5x5")
 
     print("[2] Chay thuat toan A*...")
-    path = astar(grid, START, GOAL)
+    result = astar(grid, START, GOAL)
+    
+    # Handle both old format (path) and new format (path, nodes_expanded)
+    if isinstance(result, tuple):
+        path, nodes_expanded = result
+    else:
+        path = result
+        nodes_expanded = 0
 
     if path:
         print("\n[3] Ket qua:")
         print("  - Path found!")
         print(f"  - Path: {path}")
         print(f"  - Length: {len(path)} steps")
+        print(f"  - Nodes expanded: {nodes_expanded}")
 
         print("\n[4] Hien thi bieu do...")
         try:
@@ -47,6 +57,110 @@ def run_m1_astar():
     else:
         print("  - No path found!")
 
+    print("\n" + "=" * 70)
+
+
+def run_m2_dijkstra_greedy():
+    """
+    M2: So sanh Dijkstra + Greedy algorithms
+    """
+    print("\n" + "=" * 70)
+    print("MEMBER M2: DIJKSTRA + GREEDY COMPARISON")
+    print("=" * 70)
+
+    grid = GridWorld(GRID)
+    
+    print("\n[1] Chay cac thuat toan...")
+    
+    # Run A* for comparison
+    print("\n  - Chay A*...")
+    result_astar = astar(grid, START, GOAL)
+    if isinstance(result_astar, tuple):
+        path_astar, nodes_astar = result_astar
+    else:
+        path_astar = result_astar
+        nodes_astar = 0
+    
+    # Run Dijkstra
+    print("  - Chay Dijkstra...")
+    path_dijkstra, nodes_dijkstra = dijkstra(grid, START, GOAL)
+    
+    # Run Greedy
+    print("  - Chay Greedy...")
+    path_greedy, nodes_greedy = greedy(grid, START, GOAL)
+    
+    print("\n[2] KET QUA:")
+
+    # A*
+    print("\n--- A* ---")
+    print(f"Path length     : {len(path_astar) if path_astar else 0}")
+    print(f"Nodes expanded  : {nodes_astar}")
+    print(f"Path            : {path_astar}")
+
+    # Dijkstra
+    print("\n--- Dijkstra ---")
+    print(f"Path length     : {len(path_dijkstra) if path_dijkstra else 0}")
+    print(f"Nodes expanded  : {nodes_dijkstra}")
+    print(f"Path            : {path_dijkstra}")
+
+    # Greedy
+    print("\n--- Greedy ---")
+    print(f"Path length     : {len(path_greedy) if path_greedy else 0}")
+    print(f"Nodes expanded  : {nodes_greedy}")
+    print(f"Path            : {path_greedy}")
+    
+    print("\n[3] PHAN TICH:")
+    
+    # Compare path lengths
+    if path_dijkstra and path_greedy:
+        if len(path_dijkstra) == len(path_greedy):
+            print(f"  - Dijkstra va Greedy tim duoc duong di co cung do dai: {len(path_dijkstra)} buoc")
+        else:
+            shorter = "Dijkstra" if len(path_dijkstra) < len(path_greedy) else "Greedy"
+            diff = abs(len(path_dijkstra) - len(path_greedy))
+            print(f"  - {shorter} tim duoc duong di ngan hon: {diff} buoc toi uu hon")
+    
+    # Compare nodes expanded
+    if nodes_dijkstra < nodes_greedy:
+        print(f"  - Dijkstra kham pham it node hon: {nodes_dijkstra} < {nodes_greedy} ({nodes_greedy - nodes_dijkstra} node it hon)")
+    elif nodes_greedy < nodes_dijkstra:
+        print(f"  - Greedy kham pham it node hon: {nodes_greedy} < {nodes_dijkstra} ({nodes_dijkstra - nodes_greedy} node it hon)")
+    else:
+        print(f"  - Ca hai thuat toan kham pham cung so node: {nodes_dijkstra}")
+    
+    # A* comparison
+    if path_astar:
+        astar_len = len(path_astar)
+        dijkstra_len = len(path_dijkstra) if path_dijkstra else float('inf')
+        if astar_len == dijkstra_len:
+            print(f"  - A* tim duoc duong di toi uu: {astar_len} buoc (bang Dijkstra)")
+        
+        if astar_len == dijkstra_len and nodes_astar < nodes_dijkstra:
+            print(f"  - A* co hieu suat hon Dijkstra: {nodes_dijkstra - nodes_astar} node it hon")
+    
+    print("\n[4] SO SANH THUAT TOAN:")
+    print("  - Dijkstra: Tim duong di toi uu (optimal), kham pham da so node")
+    print("  - Greedy: Tim duong di nhanh, nhung co the khong toi uu")
+    print("  - A*: Toi uu + nhanh, su dung heuristic de huong tim kiem")
+    
+    print("\n[5] HIEN THI DUONG DI:")
+    
+    # Visualize Dijkstra
+    if path_dijkstra:
+        print("\n  - Hien thi duong di Dijkstra...")
+        try:
+            draw(grid, path_dijkstra)
+        except Exception as e:
+            print(f"  Visualization error: {e}")
+    
+    # Visualize Greedy
+    if path_greedy:
+        print("  - Hien thi duong di Greedy...")
+        try:
+            draw(grid, path_greedy)
+        except Exception as e:
+            print(f"  Visualization error: {e}")
+    
     print("\n" + "=" * 70)
 
 
@@ -98,7 +212,12 @@ def run_m3_random_q_learning():
 
     print("\n[3] SO SANH A* VA Q-LEARNING")
     grid = GridWorld(GRID)
-    astar_path = astar(grid, START, GOAL)
+    result_astar = astar(grid, START, GOAL)
+    if isinstance(result_astar, tuple):
+        astar_path, _ = result_astar
+    else:
+        astar_path = result_astar
+    
     if astar_path:
         print(f"  - Duong di A*: {astar_path}")
         print(f"  - Do dai duong di A*: {len(astar_path)} nut")
@@ -174,9 +293,10 @@ def display_menu():
     print("=" * 70)
     print("\nChon chuong trinh can chay:")
     print("  1. M1: A* Pathfinding Algorithm")
-    print("  2. M3: Random Search + Q-learning")
-    print("  3. M4: Logic + STRIPS")
-    print("  4. Chay tat ca")
+    print("  2. M2: Dijkstra + Greedy Comparison")
+    print("  3. M3: Random Search + Q-learning")
+    print("  4. M4: Logic + STRIPS")
+    print("  5. Chay tat ca")
     print("  0. Thoat")
     print("\n" + "=" * 70)
 
@@ -185,16 +305,19 @@ def main():
     """Ham main"""
     while True:
         display_menu()
-        choice = input("\nNhap lua chon (0-4): ").strip()
+        choice = input("\nNhap lua chon (0-5): ").strip()
 
         if choice == "1":
             run_m1_astar()
         elif choice == "2":
-            run_m3_random_q_learning()
+            run_m2_dijkstra_greedy()
         elif choice == "3":
-            run_m4_logic_planning()
+            run_m3_random_q_learning()
         elif choice == "4":
+            run_m4_logic_planning()
+        elif choice == "5":
             run_m1_astar()
+            run_m2_dijkstra_greedy()
             run_m3_random_q_learning()
             run_m4_logic_planning()
         elif choice == "0":

@@ -12,6 +12,25 @@ Dự án này triển khai các thuật toán AI:
 - Tìm đường đi từ vị trí START đến vị trị GOAL
 - Hiển thị đường đi bằng biểu đồ
 
+### M2: So Sánh Dijkstra + Greedy vs A*
+
+Triển khai và so sánh hai thuật toán tìm đường khác:
+
+- **Dijkstra**: Thuật toán tìm đường tối ưu (optimal), nhưng kham phá nhiều node hơn
+- **Greedy**: Chỉ dùng heuristic để đánh giá, nhanh hơn nhưng có thể không tối ưu
+- **So sánh**: 
+  - Hiển thị đường đi tìm được
+  - Bảng so sánh: Path Length, Nodes Expanded
+  - Phân tích kết quả và nhận xét hiệu suất
+
+### M3: Random Search + Q-Learning
+
+Thuật toán học tăng cường (Reinforcement Learning) trên GridWorld:
+
+- **Random Search**: Tìm đường ngẫu nhiên trong N episodes
+- **Q-Learning**: Agent học chính sách tối ưu qua các episode
+- So sánh hiệu suất giữa Random Search, Q-Learning và A*
+
 ### Member 4: Logic + STRIPS
 
 Hệ thống logic và lập kế hoạch AI cho tự động hóa nhà thông minh
@@ -37,9 +56,11 @@ AI/
 │   ├── __init__.py
 │   ├── grid.py         # Lớp GridWorld: Đại diện thế giới dạng lưới
 │   └── utils.py        # Hàm hỗ trợ: heuristic, reconstruct_path
-├── search/             # Search algorithms (M1 - A*)
+├── search/             # Search algorithms (M1 - A*, M2 - Dijkstra, Greedy)
 │   ├── __init__.py
-│   └── astar.py        # Thuật toán A*
+│   ├── astar.py        # Thuật toán A*
+│   ├── dijkstra.py     # Thuật toán Dijkstra (M2)
+│   └── greedy.py       # Thuật toán Greedy (M2)
 ├── visualization/      # Visualization (M1 - biểu đồ)
 │   ├── __init__.py
 │   └── plot.py         # Vẽ lưới và đường đi
@@ -90,8 +111,10 @@ python main.py
 Sau đó chọn:
 
 - **1** để chạy M1 (A\* Pathfinding)
-- **2** để chạy M4 (Logic + STRIPS)
-- **3** để chạy cả hai
+- **2** để chạy M2 (Dijkstra + Greedy Comparison)
+- **3** để chạy M3 (Random Search + Q-Learning)
+- **4** để chạy M4 (Logic + STRIPS)
+- **5** để chạy tất cả
 - **0** để thoát
 
 ### Cách 2: Chạy trực tiếp module
@@ -135,6 +158,53 @@ Length: 9
 
 - Lưới 5x5 (màu trắng = đi được, màu đen = tường)
 - Đường đi được vẽ bằng đường trắng
+
+### M2 - Dijkstra + Greedy Comparison:
+
+Khi chạy M2, bạn sẽ thấy:
+
+**[1] Chạy các thuật toán:**
+```
+  - Chay A*...
+  - Chay Dijkstra...
+  - Chay Greedy...
+```
+
+**[2] Bảng so sánh kết quả:**
+--- A* ---
+Path length     : 9
+Nodes expanded  : 9
+Path            : [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (2, 4), (3, 4), (4, 4)]
+
+--- Dijkstra ---
+Path length     : 9
+Nodes expanded  : 14
+Path            : [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (2, 4), (3, 4), (4, 4)]
+
+--- Greedy ---
+Path length     : 9
+Nodes expanded  : 8
+Path            : [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (2, 4), (3, 4), (4, 4)]
+
+**[3] Phân tích chi tiết:**
+```
+[3] PHAN TICH:
+  - Dijkstra va Greedy tim duoc duong di co cung do dai: 9 buoc
+  - Greedy kham pham it node hon: 8 < 14 (6 node it hon)
+  - A* tim duoc duong di toi uu: 9 buoc (bang Dijkstra)
+  - A* co hieu suat hon Dijkstra: 5 node it hon
+```
+
+**[4] So sánh thuật toán:**
+```
+  - Dijkstra: Tim duong di toi uu (optimal), kham pham da so node
+  - Greedy: Tim duong di nhanh, nhung co the khong toi uu
+  - A*: Toi uu + nhanh, su dung heuristic de huong tim kiem
+```
+
+**[5] Hiển thị biểu đồ:**
+- Vẽ đường đi của Dijkstra trên grid
+- Vẽ đường đi của Greedy trên grid
 
 ### Logic + STRIPS:
 

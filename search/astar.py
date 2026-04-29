@@ -44,15 +44,28 @@ def astar(grid, start, goal):
     # Key: vi tri (x, y)
     # Value: chi phi (so buoc)
     g_score = {start: 0}
+    
+    # Track visited nodes
+    visited = set()
+    
+    # Count expanded nodes
+    nodes_expanded = 0
 
     # Lap chinh: A* search
     while open_set:
         # Lay diem co f_score nho nhat
         _, current = heapq.heappop(open_set)
 
+        # Skip if already visited
+        if current in visited:
+            continue
+        
+        visited.add(current)
+        nodes_expanded += 1
+
         # Neu da toi diem dich: tra ve duong di
         if current == goal:
-            return reconstruct_path(came_from, current)
+            return reconstruct_path(came_from, current), nodes_expanded
 
         # Kiem tra cac diem hang xom
         for neighbor in grid.get_neighbors(current):
@@ -77,4 +90,4 @@ def astar(grid, start, goal):
                 came_from[neighbor] = current
 
     # Neu thoat vong lap ma open_set rong: khong co duong
-    return None
+    return None, nodes_expanded
