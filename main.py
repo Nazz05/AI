@@ -5,7 +5,7 @@
 # Toi day se:
 # - M1: Chay A* de tim duong di
 # - M3: Chay Random Search + Q-learning
-# - M4: Chay Logic + Planning (STRIPS/PDDL)
+# - M4: Chay Logic + STRIPS
 
 from core.grid import GridWorld
 from config import GRID, START, GOAL
@@ -14,9 +14,9 @@ from visualization.plot import draw
 from m3.q_learning import run_q_learning
 from m3.random_search import run_random_search
 from m3.visualize import plot_training_results, print_q_table
-from m4.logic.rules import create_smart_home_kb
-from m4.logic.inference import run_inference
-from m4.planning.planner import run_smart_home_planning
+from logic.rules import create_smart_home_kb
+from logic.inference import run_inference
+from logic.planner import run_smart_home_planning
 
 
 def run_m1_astar():
@@ -150,7 +150,7 @@ def run_m4_logic_planning():
     M4: He thong Logic + Lap ke hoach AI (STRIPS/PDDL)
     """
     print("\n" + "=" * 70)
-    print("MEMBER M4: LOGIC + AI PLANNING (STRIPS/PDDL)")
+    print("MEMBER M4: LOGIC + STRIPS")
     print("=" * 70)
 
     print("\n" + "=" * 70)
@@ -175,7 +175,7 @@ def display_menu():
     print("\nChon chuong trinh can chay:")
     print("  1. M1: A* Pathfinding Algorithm")
     print("  2. M3: Random Search + Q-learning")
-    print("  3. M4: Logic + AI Planning (STRIPS/PDDL)")
+    print("  3. M4: Logic + STRIPS")
     print("  4. Chay tat ca")
     print("  0. Thoat")
     print("\n" + "=" * 70)

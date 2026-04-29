@@ -19,17 +19,17 @@ def create_smart_home_domain():
     # Định nghĩa các atoms (facts)
     atoms = {
         # Vị trí & sự kiện quan sát
-        "person_home": Atom("person_home", []),
+        "person_home": Atom("person_home", ["living_room"]),
         "person_away": Atom("person_away", []),
-        "dark": Atom("dark", []),
-        "bright": Atom("bright", []),
-        "motion_detected": Atom("motion_detected", []),
+        "dark": Atom("dark", ["living_room"]),
+        "bright": Atom("bright", ["living_room"]),
+        "motion_detected": Atom("motion_detected", ["living_room"]),
         "high_temperature": Atom("high_temperature", []),
         "low_temperature": Atom("low_temperature", []),
         
         # Trạng thái thiết bị
-        "light_on": Atom("light_on", []),
-        "light_off": Atom("light_off", []),
+        "light_on": Atom("light_on", ["living_room"]),
+        "light_off": Atom("light_off", ["living_room"]),
         "ac_on": Atom("ac_on", []),
         "ac_off": Atom("ac_off", []),
         "door_locked": Atom("door_locked", []),

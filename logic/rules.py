@@ -23,6 +23,16 @@ class Predicate:
         if not isinstance(other, Predicate):
             return False
         return self.name == other.name and self.args == other.args
+
+    @staticmethod
+    def is_variable(arg: str) -> bool:
+        """Biến được biểu diễn bằng tên bắt đầu bằng chữ hoa."""
+        return bool(arg) and arg[0].isupper()
+    
+    def substitute(self, binding: Dict[str, str]) -> 'Predicate':
+        """Thay thế biến trong predicate bằng giá trị từ binding."""
+        new_args = tuple(binding.get(arg, arg) if Predicate.is_variable(arg) else arg for arg in self.args)
+        return Predicate(self.name, new_args)
     
     def __repr__(self):
         if self.args:
@@ -42,9 +52,9 @@ class Rule:
     priority: int = 1  # Độ ưu tiên (cao hơn = thực thi trước)
     
     def __repr__(self):
-        cond_str = " ∧ ".join(str(c) for c in self.conditions)
-        conc_str = " ∧ ".join(str(c) for c in self.conclusions)
-        return f"{self.name}: [{cond_str}] → [{conc_str}]"
+        cond_str = " and ".join(str(c) for c in self.conditions)
+        conc_str = " and ".join(str(c) for c in self.conclusions)
+        return f"{self.name}: [{cond_str}] -> [{conc_str}]"
 
 
 class KnowledgeBase:
@@ -87,49 +97,61 @@ def create_smart_home_kb() -> KnowledgeBase:
     kb = KnowledgeBase()
     
     # ============= FACTS (Sự kiện ban đầu) =============
-    # Trạng thái các phòng
     kb.add_fact(Predicate("room", ("living_room",)))
     kb.add_fact(Predicate("room", ("bedroom",)))
     kb.add_fact(Predicate("room", ("kitchen",)))
     
-    # Trạng thái ban đầu
-    kb.add_fact(Predicate("person_home", ()))  # Có người ở nhà
+    kb.add_fact(Predicate("person_home", ("living_room",)))  # Có người ở phòng khách
     kb.add_fact(Predicate("dark", ("living_room",)))  # Phòng khách tối
-    kb.add_fact(Predicate("temperature", ("20",)))  # Nhiệt độ 20°C
     kb.add_fact(Predicate("motion_detected", ("living_room",)))  # Phát hiện chuyển động
+    kb.add_fact(Predicate("temperature", ("20",)))  # Nhiệt độ 20°C
+    kb.add_fact(Predicate("light_off", ("living_room",)))  # Đèn đang tắt
     
     # ============= RULES (Quy tắc logic) =============
     
-    # RULE 1: Nếu phòng tối + có người ở nhà → bật đèn
+    # RULE 1: Nếu phòng tối và có người ở cùng phòng → bật đèn
     rule1 = Rule(
         name="Auto_Light_On",
         conditions=[
-            Predicate("dark", ("living_room",)),
-            Predicate("person_home", ())
+            Predicate("dark", ("X",)),
+            Predicate("person_home", ("X",))
         ],
         conclusions=[
-            Predicate("light_on", ("living_room",))
+            Predicate("light_on", ("X",))
         ],
-        priority=2
+        priority=3
     )
     kb.add_rule(rule1)
     
-    # RULE 2: Nếu không phát hiện chuyển động + vắng nhà → tắt đèn
+    # RULE 2: Nếu có chuyển động → bật đèn
     rule2 = Rule(
-        name="Auto_Light_Off",
+        name="Motion_Activated_Light",
         conditions=[
-            Predicate("light_on", ("living_room",)),
-            Predicate("no_motion", ("living_room",))
+            Predicate("motion_detected", ("X",))
         ],
         conclusions=[
-            Predicate("light_off", ("living_room",))
+            Predicate("light_on", ("X",))
         ],
-        priority=1
+        priority=2
     )
     kb.add_rule(rule2)
     
-    # RULE 3: Nếu nhiệt độ > 25 → bật điều hòa
+    # RULE 3: Nếu không có chuyển động nhưng đèn đang bật → tắt đèn
     rule3 = Rule(
+        name="Auto_Light_Off",
+        conditions=[
+            Predicate("light_on", ("X",)),
+            Predicate("no_motion", ("X",))
+        ],
+        conclusions=[
+            Predicate("light_off", ("X",))
+        ],
+        priority=1
+    )
+    kb.add_rule(rule3)
+    
+    # RULE 4: Nếu nhiệt độ cao → bật điều hòa
+    rule4 = Rule(
         name="Auto_AC_On",
         conditions=[
             Predicate("high_temperature", ())
@@ -139,22 +161,9 @@ def create_smart_home_kb() -> KnowledgeBase:
         ],
         priority=2
     )
-    kb.add_rule(rule3)
-    
-    # RULE 4: Nếu phát hiện chuyển động → bật đèn
-    rule4 = Rule(
-        name="Motion_Activated_Light",
-        conditions=[
-            Predicate("motion_detected", ("living_room",))
-        ],
-        conclusions=[
-            Predicate("light_on", ("living_room",))
-        ],
-        priority=3
-    )
     kb.add_rule(rule4)
     
-    # RULE 5: Nếu vắng nhà → khóa cửa + bật chế độ tiết kiệm
+    # RULE 5: Nếu vắng nhà → khóa cửa và bật chế độ tiết kiệm năng lượng
     rule5 = Rule(
         name="Away_Mode_Activated",
         conditions=[

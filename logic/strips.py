@@ -46,7 +46,7 @@ class Action:
             f"+{e[0]}" if e[1] else f"-{e[0]}" 
             for e in self.effects
         )
-        return f"{self.name}: [{prec_str}] → [{effects_str}]"
+        return f"{self.name}: [{prec_str}] -> [{effects_str}]"
     
     def is_applicable(self, state: Set[Atom]) -> bool:
         """Kiểm tra hành động có thể áp dụng được trong trạng thái hiện tại"""
@@ -222,18 +222,18 @@ class PlanExecutor:
     def execute_step(self, current_state: Set[Atom]) -> Optional[Set[Atom]]:
         """Thực thi bước tiếp theo của kế hoạch"""
         if self.current_step >= len(self.plan):
-            print("✓ Kế hoạch đã hoàn thành!")
+            print("PLAN COMPLETED!")
             return current_state
         
         action = self.plan[self.current_step]
         
         if action.is_applicable(current_state):
             new_state = action.apply(current_state)
-            print(f"Step {self.current_step + 1}: Thực thi '{action.name}' ✓")
+            print(f"Step {self.current_step + 1}: Execute '{action.name}'")
             self.current_step += 1
             return new_state
         else:
-            print(f"✗ Không thể thực thi '{action.name}': điều kiện tiên quyết không thỏa mãn")
+            print(f"Step {self.current_step + 1}: Cannot execute '{action.name}': preconditions not satisfied")
             return None
     
     def execute_all(self, initial_state: Set[Atom]) -> Optional[Set[Atom]]:
@@ -244,10 +244,10 @@ class PlanExecutor:
             print(f"\nStep {step}: {action.name}")
             if action.is_applicable(current_state):
                 current_state = action.apply(current_state)
-                print(f"  ✓ Thực thi thành công")
-                print(f"  → Trạng thái mới: {len(current_state)} atoms")
+                print("  EXECUTED SUCCESSFULLY")
+                print(f"  -> New state: {len(current_state)} atoms")
             else:
-                print(f"  ✗ LỖI: Điều kiện tiên quyết không thỏa mãn")
+                print("  ERROR: Preconditions not satisfied")
                 return None
         
         return current_state
